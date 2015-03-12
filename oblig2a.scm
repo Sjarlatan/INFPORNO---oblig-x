@@ -1,3 +1,5 @@
+(load "huffman.scm")
+
 ;;1. Diverse
 ;; a)
 (define (p-cons x y)
@@ -48,7 +50,6 @@
 
 
 ;; 2. Huffmankoding
-
 ;; a)
 (define (member? symbol list)
   (cond ((null? list) #f)
@@ -59,6 +60,16 @@
 
 ;; c)
 
-;; d)
+(define (decode-2 bits tree)
+  (if (null? bits)
+      '()
+      (let ((next-branch
+             (choose-branch (car bits) tree)))
+        (if (leaf? next-branch)
+            (cons (symbol-leaf next-branch)
+                  (decode-2 (cdr bits) tree))
+            (decode-2 (cdr bits) next-branch)))))
 
-;; e)
+(decode sample-code sample-tree)
+(decode-2 sample-code sample-tree)
+
