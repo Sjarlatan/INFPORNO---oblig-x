@@ -48,12 +48,17 @@
 
 
 ;; 2. Huffmankoding
+
 ;; a)
 (define (member? symbol list)
   (cond ((null? list) #f)
         ((eq? symbol (car list)) #t)
         (else (member? symbol (cdr list)))))
 
-;;HEI!!!
-(member? 'forest '(lake river ocean))
-(member? 'river '(lake river ocean))
+;; b)
+
+;; c)
+
+;; d)
+
+;; e)
