@@ -52,7 +52,8 @@
 (define (member? symbol list)
   (cond ((null? list) #f)
         ((eq? symbol (car list)) #t)
-        (else (cdr list))))
+        (else (member? symbol (cdr list)))))
 
 ;;HEI!!!
 (member? 'forest '(lake river ocean))
+(member? 'river '(lake river ocean))
