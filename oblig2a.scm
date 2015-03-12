@@ -53,3 +53,6 @@
   (cond ((null? list) #f)
         ((eq? symbol (car list)) #t)
         (else (cdr list))))
+
+;;HEI!!!
+(member? 'forest '(lake river ocean))
