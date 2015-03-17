@@ -58,6 +58,9 @@
 
 ;; b)
 
+;;Ser ut til at den interne prosedyren bare er til for å opprette 
+;;en lokal variabel til den grenen man traverserer, slik at man ikke ødelegger hele treet.
+
 ;; c) Iterativ losning av decode. 
 ;; Tar vare paa hver lovnodes liste ved aa slaa den sammen med accumulator istedenfor at
 ;; cons venter paa returverdien til de rekursive kallene.
@@ -88,19 +91,11 @@
               ((member? (car message)(symbols (left-branch branch))) 
                (encode-1 message (left-branch branch)(cons 0 code)))
               (else (encode-1 message (right-branch branch)(cons 1 code))))))
-  (encode-1 message tree '()))
-
-
-;(define (bencode frase tree)
-;  (define (bencode-1 frase tree code)
-;    (if (null? frase)
-;        (reverse code)
-;        (if (leaf? branch)
-;            (bencode-1 (cdr message) tree code)
-;            ((
-            
+  (encode-1 message tree '()))            
 
 ;; f)
+
+;; Har vi gjort f riktig?
 
 (define (grow-huffman-tree freqs)
     (if (= (length freqs) 1)
@@ -129,4 +124,14 @@
 ;; h)
 
 (define (huffman-leaves tree)
-  (
+  (define (trav-huff tree)
+  (if (null? tree)
+      '()
+      (if (leaf? tree)
+          (cons (trav-huff (cadr tree))(weight-leaf tree))
+          (trav-huff (cdr tree)))))
+  (trav-huff tree))
+   
+(huffman-leaves sample-tree)
+
+;; i)
