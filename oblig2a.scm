@@ -58,18 +58,75 @@
 
 ;; b)
 
-;; c)
+;; c) Iterativ losning av decode. 
+;; Tar vare paa hver lovnodes liste ved aa slaa den sammen med accumulator istedenfor at
+;; cons venter paa returverdien til de rekursive kallene.
+(define (decode-tail bits tree)
+  (define (decode-2 bits current-branch accumulator)
+    (if (null? bits)
+        (reverse accumulator) ;; Listen settes sammen baklengs og maa snus.
+        (let ((next-branch
+               (choose-branch (car bits) current-branch)))
+          (if (leaf? next-branch)
+              (decode-2 (cdr bits) tree 
+                        (cons (symbol-leaf next-branch) accumulator))
+              (decode-2 (cdr bits) next-branch accumulator)))))
+  (decode-2 bits tree '()))
 
-(define (decode-2 bits tree)
-  (if (null? bits)
-      '()
-      (let ((next-branch
-             (choose-branch (car bits) tree)))
-        (if (leaf? next-branch)
-            (cons (symbol-leaf next-branch)
-                  (decode-2 (cdr bits) tree))
-            (decode-2 (cdr bits) next-branch)))))
 
-(decode sample-code sample-tree)
-(decode-2 sample-code sample-tree)
+;; d)
+;;(decode sample-code sample-tree)
+;;(decode-tail sample-code sample-tree)
+;; Begge returnerer 'ninjas fight ninjas by night'.
 
+;; e)
+(define (encode message tree)
+  (define (encode-1 message branch code)
+    (if (null? message)
+        (reverse code)
+        (cond ((leaf? branch) (encode-1 (cdr message) tree code))
+              ((member? (car message)(symbols (left-branch branch))) 
+               (encode-1 message (left-branch branch)(cons 0 code)))
+              (else (encode-1 message (right-branch branch)(cons 1 code))))))
+  (encode-1 message tree '()))
+
+
+;(define (bencode frase tree)
+;  (define (bencode-1 frase tree code)
+;    (if (null? frase)
+;        (reverse code)
+;        (if (leaf? branch)
+;            (bencode-1 (cdr message) tree code)
+;            ((
+            
+
+;; f)
+
+(define (grow-huffman-tree freqs)
+    (if (= (length freqs) 1)
+        (car freqs)
+        (grow-huffman-tree (adjoin-set (make-code-tree (car freqs)(cadr freqs)) 
+                                       (cddr freqs)))))
+  
+
+(define freqs '((a 2) (b 5) (c 1) (d 3) (e 1) (f 3)))
+(define codebook (grow-huffman-tree (make-leaf-set freqs)))
+;;(decode (encode '(a b c) codebook) codebook)
+;;(decode (encode '(d e f) codebook) codebook)
+
+;; g)
+
+(define gecks '((ninjas 57) (samurais 20) (fight 45) (night 12) (hide 3) (in 2) (ambush 2) (defeat 1) (the 5) (sword 4) (by 12) (assassin 1) (river 2) (forest 1) (wait 1) (poison 1)))
+(define codebook (grow-huffman-tree (make-leaf-set gecks)))
+
+(encode '(ninjas fight) codebook)
+(encode '(ninjas fight ninjas) codebook)
+(encode '(ninjas fight samurais) codebook)
+(encode '(samurais fight) codebook)
+(encode '(samurais fight ninjas) codebook)
+(encode '(ninjas fight by night) codebook)
+
+;; h)
+
+(define (huffman-leaves tree)
+  (
