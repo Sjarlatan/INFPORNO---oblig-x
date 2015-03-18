@@ -95,8 +95,6 @@
 
 ;; f)
 
-;; Har vi gjort f riktig?
-
 (define (grow-huffman-tree freqs)
     (if (= (length freqs) 1)
         (car freqs)
@@ -114,24 +112,31 @@
 (define gecks '((ninjas 57) (samurais 20) (fight 45) (night 12) (hide 3) (in 2) (ambush 2) (defeat 1) (the 5) (sword 4) (by 12) (assassin 1) (river 2) (forest 1) (wait 1) (poison 1)))
 (define codebook (grow-huffman-tree (make-leaf-set gecks)))
 
-(encode '(ninjas fight) codebook)
-(encode '(ninjas fight ninjas) codebook)
-(encode '(ninjas fight samurais) codebook)
-(encode '(samurais fight) codebook)
-(encode '(samurais fight ninjas) codebook)
-(encode '(ninjas fight by night) codebook)
+(length (encode '(ninjas fight ninjas fight ninjas ninjas fight samurais samurais fight samurais fight ninjas ninjas fight by night) codebook))
+(encode '(night) codebook)
+
+;; (1 1 1 0 1 1 1 0 1 1 1 1 1 0 0 1 0 0 1 0 1 0 0 1 0 1 0 1 1 1 1 1 0 0 1 1 1 0 0 0)
+;; = 40 bits
+
+;; ninjas   11   2 
+;; fight    10   2 
+;; samurais 010  3 
+;; by       0110 4 
+;; night    000  3 
+;;               14/5
+
+;; Gjennomsnittslengde for hvert kodeord: 2,80
+
+;; Minste antallet bits i Fixed-length code: I ascii er det 7 bits/symbol. Da ville meldingen blitt 119 bits lang.
 
 ;; h)
-
+        
 (define (huffman-leaves tree)
-  (define (trav-huff tree)
-  (if (null? tree)
-      '()
-      (if (leaf? tree)
-          (cons (trav-huff (cadr tree))(weight-leaf tree))
-          (trav-huff (cdr tree)))))
-  (trav-huff tree))
-   
+  (if(leaf? tree)
+     (list(list (symbol-leaf tree)(weight-leaf tree)))
+     (append (huffman-leaves(right-branch tree))
+             (huffman-leaves(left-branch tree)))))
+
 (huffman-leaves sample-tree)
 
 ;; i)
