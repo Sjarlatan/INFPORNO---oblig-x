@@ -43,10 +43,10 @@
 ;; (eller andre prosedyrer) paa to lister av operander.
 ;; Her er et par eksempler paa hva den anonyme prosedyren faktisk gjor:
 ((lambda (x y z)(y x z)) 
-  1 + 2) ;; 3
+ 1 + 2) ;; 3
 
 ((lambda (x y z)(y x z)) 
-  1 cons 2) ;; (1 . 2)
+ 1 cons 2) ;; (1 . 2)
 
 
 ;; 2. Huffmankoding
@@ -96,11 +96,11 @@
 ;; f)
 
 (define (grow-huffman-tree freqs)
-    (if (= (length freqs) 1)
-        (car freqs)
-        (grow-huffman-tree (adjoin-set (make-code-tree (car freqs)(cadr freqs)) 
-                                       (cddr freqs)))))
-  
+  (if (= (length freqs) 1)
+      (car freqs)
+      (grow-huffman-tree (adjoin-set (make-code-tree (car freqs)(cadr freqs)) 
+                                     (cddr freqs)))))
+
 
 (define freqs '((a 2) (b 5) (c 1) (d 3) (e 1) (f 3)))
 (define codebook (grow-huffman-tree (make-leaf-set freqs)))
@@ -114,6 +114,7 @@
 
 (length (encode '(ninjas fight ninjas fight ninjas ninjas fight samurais samurais fight samurais fight ninjas ninjas fight by night) codebook))
 (encode '(night) codebook)
+
 
 ;; (1 1 1 0 1 1 1 0 1 1 1 1 1 0 0 1 0 0 1 0 1 0 0 1 0 1 0 1 1 1 1 1 0 0 1 1 1 0 0 0)
 ;; = 40 bits
@@ -130,7 +131,7 @@
 ;; Minste antallet bits i Fixed-length code: I ascii er det 7 bits/symbol. Da ville meldingen blitt 119 bits lang.
 
 ;; h)
-        
+
 (define (huffman-leaves tree)
   (if(leaf? tree)
      (list(list (symbol-leaf tree)(weight-leaf tree)))
@@ -140,3 +141,30 @@
 (huffman-leaves sample-tree)
 
 ;; i)
+
+;; (frekvens for symbol/ sum) x (length (encode(symbol))).
+
+(define (expected-code-length tree)
+  
+  (define oversikt (huffman-leaves tree))
+  (define antall (length (huffman-leaves sample-tree)))
+  
+  (define (sumvekt leaves total)
+    (if (null? leaves)
+        total
+        (sumvekt (cdr leaves) (+ total (cadr (car leaves))))))
+  (sumvekt oversikt 0)
+  
+  (define sum (sumvekt (huffman-leaves sample-tree) 0))
+  
+  (define (utregning summert leaves)
+    (if (null? leaves)
+        summert
+        (utregning (+ summert (/ (cdr (car leaves)) sum))(cdr leaves))))
+  (utregning '() oversikt)
+  
+  
+  )
+
+(expected-code-length sample-tree)
+
