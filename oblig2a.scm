@@ -160,33 +160,7 @@
   (define (utregner sum oversikt)
     (if (null? oversikt)
         sum
-        (utregner (+ (* (/ (car (cdr (car oversikt))) summer) (length (encode (list (car(car oversikt))) tree)))) (cdr oversikt))))
+        (utregner (+ (* (/ (car (cdr (car oversikt))) summer) (length (encode (list (car(car oversikt))) tree))) sum) (cdr oversikt))))
   (utregner 0 oversikt))
-  
+
 (expected-code-length sample-tree)
-
- ;; oversikt
- ;; (car oversikt)
- ;; (car (cdr (car oversikt)))
- ;; (car (cdr oversikt))
-  
-
-; (car(cdr(car leaves)
-;  (define oversikt (huffman-leaves tree))
-;  (define antall (length (huffman-leaves sample-tree)))
-;  
-;  (define (sumvekt leaves total)
-;    (if (null? leaves)
-;        total
-;        (sumvekt (cdr leaves) (+ total (cadr (car leaves))))))
-;  (sumvekt oversikt 0)
-;  
-;  (define sum (sumvekt (huffman-leaves sample-tree) 0))
-;  
-;  (define (utregning summert leaves)
-;    (if (null? leaves)
-;        summert
-;        (utregning (+ summert (/ (car (cdr (car leaves))) sum)) leaves)))
-;  (utregning '() oversikt)
-;  
-
