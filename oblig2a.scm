@@ -1,3 +1,5 @@
+;; INF2810 - benjamat og thoschwi - oblig2a
+
 (load "huffman.scm")
 
 ;;1. Diverse
@@ -153,17 +155,17 @@
   (length (encode (list symbol) tree)))
 
 (define (expected-code-length tree)
-  (define oversikt (huffman-leaves tree))
-  (define summer (sum-weights (huffman-leaves tree)))
-  (define (utregner sum oversikt)
-    (if (null? oversikt)
-        sum
-        (utregner (+ (* (/ (car (cdr (car oversikt))) summer) (length (encode (list (car(car oversikt))) tree))) sum) (cdr oversikt))))
-  (utregner 0 oversikt))
+  (define leaves (huffman-leaves tree))
+  (define sums (sum-weights (huffman-leaves tree)))
+  (define (calculate total leaves)
+    (if (null? leaves)
+        total
+        (calculate (+ (* (/ (car (cdr (car leaves))) sums) (length (encode (list (car(car leaves))) tree))) total) (cdr leaves))))
+  (calculate 0 leaves))
 
-;;(expected-code-length sample-tree)
+(expected-code-length sample-tree)
 
 ;; For at den faktiske gjennomsnittlige lengden på kodeordene i 
 ;; en melding skal tilsvare den forventede gjennomsnittslengden
-;; må frekvensen av kodeord i meldingene samsvare med vektingen
+;; må frekvensen av kodeord i meldingen samsvare med vektingen
 ;; treet ble generert med.
