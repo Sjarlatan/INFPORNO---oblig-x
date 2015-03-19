@@ -135,8 +135,8 @@
 (define (huffman-leaves tree)
   (if(leaf? tree)
      (list(list (symbol-leaf tree)(weight-leaf tree)))
-     (append (huffman-leaves(right-branch tree))
-             (huffman-leaves(left-branch tree)))))
+     (append (huffman-leaves(left-branch tree))
+             (huffman-leaves(right-branch tree)))))
 
 (huffman-leaves sample-tree)
 
@@ -144,27 +144,49 @@
 
 ;; (frekvens for symbol/ sum) x (length (encode(symbol))).
 
+(define (sum-weights leaves)
+  (if (null? leaves)
+      0
+      (+ (sum-weights (cdr leaves))(car(cdr(car leaves))))))
+
+(define (num-bits symbol tree)
+  (length (encode (list symbol) tree)))
+
 (define (expected-code-length tree)
   
   (define oversikt (huffman-leaves tree))
-  (define antall (length (huffman-leaves sample-tree)))
+  (define summer (sum-weights (huffman-leaves tree)))
   
-  (define (sumvekt leaves total)
-    (if (null? leaves)
-        total
-        (sumvekt (cdr leaves) (+ total (cadr (car leaves))))))
-  (sumvekt oversikt 0)
+  (define (utregner sum oversikt)
+    (if (null? oversikt)
+        sum
+        (utregner (+ (* (/ (car (cdr (car oversikt))) summer) (length (encode (list (car(car oversikt))) tree)))) (cdr oversikt))))
+  (utregner 0 oversikt))
   
-  (define sum (sumvekt (huffman-leaves sample-tree) 0))
-  
-  (define (utregning summert leaves)
-    (if (null? leaves)
-        summert
-        (utregning (+ summert (/ (cdr (car leaves)) sum))(cdr leaves))))
-  (utregning '() oversikt)
-  
-  
-  )
-
 (expected-code-length sample-tree)
+
+ ;; oversikt
+ ;; (car oversikt)
+ ;; (car (cdr (car oversikt)))
+ ;; (car (cdr oversikt))
+  
+
+; (car(cdr(car leaves)
+;  (define oversikt (huffman-leaves tree))
+;  (define antall (length (huffman-leaves sample-tree)))
+;  
+;  (define (sumvekt leaves total)
+;    (if (null? leaves)
+;        total
+;        (sumvekt (cdr leaves) (+ total (cadr (car leaves))))))
+;  (sumvekt oversikt 0)
+;  
+;  (define sum (sumvekt (huffman-leaves sample-tree) 0))
+;  
+;  (define (utregning summert leaves)
+;    (if (null? leaves)
+;        summert
+;        (utregning (+ summert (/ (car (cdr (car leaves))) sum)) leaves)))
+;  (utregning '() oversikt)
+;  
 
