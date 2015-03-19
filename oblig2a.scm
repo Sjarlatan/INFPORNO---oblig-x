@@ -144,8 +144,6 @@
 
 ;; i)
 
-;; (frekvens for symbol/ sum) x (length (encode(symbol))).
-
 (define (sum-weights leaves)
   (if (null? leaves)
       0
