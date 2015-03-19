@@ -76,7 +76,6 @@
               (decode-2 (cdr bits) next-branch accumulator)))))
   (decode-2 bits tree '()))
 
-
 ;; d)
 ;;(decode sample-code sample-tree)
 ;;(decode-tail sample-code sample-tree)
@@ -128,7 +127,8 @@
 
 ;; Gjennomsnittslengde for hvert kodeord: 2,80
 
-;; Minste antallet bits i Fixed-length code: I ascii er det 7 bits/symbol. Da ville meldingen blitt 119 bits lang.
+;; Minste antallet bits i Fixed-length code: 
+;;Fixed length gir 2^n antall bits, og i ASCII er n 7. I ASCII ville meldingen blitt 119 bits lang.
 
 ;; h)
 
@@ -138,7 +138,7 @@
      (append (huffman-leaves(left-branch tree))
              (huffman-leaves(right-branch tree)))))
 
-(huffman-leaves sample-tree)
+;;(huffman-leaves sample-tree)
 
 ;; i)
 
@@ -153,14 +153,17 @@
   (length (encode (list symbol) tree)))
 
 (define (expected-code-length tree)
-  
   (define oversikt (huffman-leaves tree))
   (define summer (sum-weights (huffman-leaves tree)))
-  
   (define (utregner sum oversikt)
     (if (null? oversikt)
         sum
         (utregner (+ (* (/ (car (cdr (car oversikt))) summer) (length (encode (list (car(car oversikt))) tree))) sum) (cdr oversikt))))
   (utregner 0 oversikt))
 
-(expected-code-length sample-tree)
+;;(expected-code-length sample-tree)
+
+;; For at den faktiske gjennomsnittlige lengden på kodeordene i 
+;; en melding skal tilsvare den forventede gjennomsnittslengden
+;; må frekvensen av kodeord i meldingene samsvare med vektingen
+;; treet ble generert med.
