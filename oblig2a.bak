@@ -1,3 +1,7 @@
+;; INF2810 - benjamat og thoschwi - oblig2a
+
+(load "huffman.scm")
+
 ;;1. Diverse
 ;; a)
 (define (p-cons x y)
@@ -41,10 +45,10 @@
 ;; (eller andre prosedyrer) paa to lister av operander.
 ;; Her er et par eksempler paa hva den anonyme prosedyren faktisk gjor:
 ((lambda (x y z)(y x z)) 
-  1 + 2) ;; 3
+ 1 + 2) ;; 3
 
 ((lambda (x y z)(y x z)) 
-  1 cons 2) ;; (1 . 2)
+ 1 cons 2) ;; (1 . 2)
 
 
 ;; 2. Huffmankoding
@@ -52,4 +56,114 @@
 (define (member? symbol list)
   (cond ((null? list) #f)
         ((eq? symbol (car list)) #t)
-        (else (cdr list))))
+        (else (member? symbol (cdr list)))))
+
+;; b)
+
+;;Ser ut til at den interne prosedyren bare er til for å opprette 
+;;en lokal variabel til den grenen man traverserer, slik at man ikke ødelegger hele treet.
+
+;; c) Iterativ losning av decode. 
+;; Tar vare paa hver lovnodes liste ved aa slaa den sammen med accumulator istedenfor at
+;; cons venter paa returverdien til de rekursive kallene.
+(define (decode-tail bits tree)
+  (define (decode-2 bits current-branch accumulator)
+    (if (null? bits)
+        (reverse accumulator) ;; Listen settes sammen baklengs og maa snus.
+        (let ((next-branch
+               (choose-branch (car bits) current-branch)))
+          (if (leaf? next-branch)
+              (decode-2 (cdr bits) tree 
+                        (cons (symbol-leaf next-branch) accumulator))
+              (decode-2 (cdr bits) next-branch accumulator)))))
+  (decode-2 bits tree '()))
+
+;; d)
+;;(decode sample-code sample-tree)
+;;(decode-tail sample-code sample-tree)
+;; Begge returnerer 'ninjas fight ninjas by night'.
+
+;; e)
+(define (encode message tree)
+  (define (encode-1 message branch code)
+    (if (null? message)
+        (reverse code)
+        (cond ((leaf? branch) (encode-1 (cdr message) tree code))
+              ((member? (car message)(symbols (left-branch branch))) 
+               (encode-1 message (left-branch branch)(cons 0 code)))
+              (else (encode-1 message (right-branch branch)(cons 1 code))))))
+  (encode-1 message tree '()))            
+
+;; f)
+
+(define (grow-huffman-tree freqs)
+  (if (= (length freqs) 1)
+      (car freqs)
+      (grow-huffman-tree (adjoin-set (make-code-tree (car freqs)(cadr freqs)) 
+                                     (cddr freqs)))))
+
+
+(define freqs '((a 2) (b 5) (c 1) (d 3) (e 1) (f 3)))
+(define codebook (grow-huffman-tree (make-leaf-set freqs)))
+;;(decode (encode '(a b c) codebook) codebook)
+;;(decode (encode '(d e f) codebook) codebook)
+
+;; g)
+
+(define gecks '((ninjas 57) (samurais 20) (fight 45) (night 12) (hide 3) (in 2) (ambush 2) (defeat 1) (the 5) (sword 4) (by 12) (assassin 1) (river 2) (forest 1) (wait 1) (poison 1)))
+(define codebook (grow-huffman-tree (make-leaf-set gecks)))
+
+(length (encode '(ninjas fight ninjas fight ninjas ninjas fight samurais samurais fight samurais fight ninjas ninjas fight by night) codebook))
+(encode '(night) codebook)
+
+
+;; (1 1 1 0 1 1 1 0 1 1 1 1 1 0 0 1 0 0 1 0 1 0 0 1 0 1 0 1 1 1 1 1 0 0 1 1 1 0 0 0)
+;; = 40 bits
+
+;; ninjas   11   2 
+;; fight    10   2 
+;; samurais 010  3 
+;; by       0110 4 
+;; night    000  3 
+;;               14/5
+
+;; Gjennomsnittslengde for hvert kodeord: 2,80
+
+;; Minste antallet bits i Fixed-length code: 
+;;Fixed length gir 2^n antall bits, og i ASCII er n 7. I ASCII ville meldingen blitt 119 bits lang.
+
+;; h)
+
+(define (huffman-leaves tree)
+  (if(leaf? tree)
+     (list(list (symbol-leaf tree)(weight-leaf tree)))
+     (append (huffman-leaves(left-branch tree))
+             (huffman-leaves(right-branch tree)))))
+
+;;(huffman-leaves sample-tree)
+
+;; i)
+
+(define (sum-weights leaves)
+  (if (null? leaves)
+      0
+      (+ (sum-weights (cdr leaves))(car(cdr(car leaves))))))
+
+(define (num-bits symbol tree)
+  (length (encode (list symbol) tree)))
+
+(define (expected-code-length tree)
+  (define leaves (huffman-leaves tree))
+  (define sums (sum-weights (huffman-leaves tree)))
+  (define (calculate total leaves)
+    (if (null? leaves)
+        total
+        (calculate (+ (* (/ (car (cdr (car leaves))) sums) (length (encode (list (car(car leaves))) tree))) total) (cdr leaves))))
+  (calculate 0 leaves))
+
+(expected-code-length sample-tree)
+
+;; For at den faktiske gjennomsnittlige lengden på kodeordene i 
+;; en melding skal tilsvare den forventede gjennomsnittslengden
+;; må frekvensen av kodeord i meldingen samsvare med vektingen
+;; treet ble generert med.
