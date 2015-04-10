@@ -59,54 +59,34 @@
 
 ;; b)
 
+(define bah (list 'bring 'a 'towel))
+;;(set-car! bah (cdr bah))
+;;(eq? (car bah) (cdr bah))
+;;bah
+;;(set-car! (car bah) 42)
+
+
 ;; c)
 
-;;1
-(define (cycle1? items)
-  (define (traverse items original)
-    (if (equal? items original)
-        #t
-        (traverse (cdr items) original)))
-  (if (null? items)
-      '()
-      (traverse (cdr items) (cdr items))))
+(define (cycle? items) ;; Konstant minnebruk.
+  (define (race tortoise hare)
+    (cond ((null? hare) #f)
+          ((null? (cdr hare)) #f)
+          ((eq? tortoise hare) #t)
+          (else (race (cdr tortoise) (cddr hare)))))
+  (race items (cdr items)))
 
-;;2
-(define (cycle2? items)
-  (define (traverse original items)
-    (if (null? items)
-        (traverse (cdr original) (cdr original))
-        (if (equal? items original)
-            #t
-            (traverse original (cdr items)))))
-  (traverse items (cdr items)))
-
-;;3
-(define (cycle? items)
-  (define (traverse original rest)
-    (if (null? original)
-        #f
-        (cond ((equal? original rest) #t) ;;equal? eq?
-              ((null? rest) (traverse (cdr original) (cdr original)))
-              (else (traverse original (cdr rest))))))
-  (traverse items (cdr items)))    
-      
-(cycle? '(hey ho))
+;;(cycle? '(hey ho))
 ;;(cycle? bar)
 
-;;miiin taaaaenke er god, når schemekoden fakker, logikken er over alle bakker...
 
 ;; d)
 
+;; WHY?
+
 ;; e)
 
-(define (make-ring items)
-  (define head items)
-  (define (round items)
-    (if (null? (cdr items))
-        (append items head);;set-cdr?
-        (round (cdr items))))
-  (round items))
+
 
 (define r1 (make-ring '(1 2 3 4)))
 r1
