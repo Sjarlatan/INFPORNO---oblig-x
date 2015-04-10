@@ -27,7 +27,7 @@
     (lambda (message . items) ;; Items er en argumentliste av variabel lengde.
       (case message
         ('pop! (if (null? stack)
-                   '() ;; Aner ikke hvordan man bare gjor "ingenting"...
+                   (values) ;; Aner ikke hvordan man bare gjor "ingenting"...
                    (set! stack (cdr stack))))
         ('push! (set! stack (append (reverse items) stack)))
         ('stack stack)
@@ -49,9 +49,9 @@
   (stack 'stack))
 
 (pop! s1)
-(stack s1)
+;;(stack s1)
 (push! s1 'dune 'atreides);; En cons for mye?
-(stack s1)
+;;(stack s1)
 
 ;; 3 Strukturdeling og sirkulære lister
 ;; a)
