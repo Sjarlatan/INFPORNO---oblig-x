@@ -125,17 +125,20 @@
         #f))  
 
   (define (build-triples items triple)
-    (cond ((o? (right top)) (build-triples (cdr items)
-                                (make-triple (cadr items) top 'o)))
+    (cond ((o? (right top)) (begin ;;set! triple...
+           (set! top (right triple))
+           (set! triple (left top))
+           (build-triples items triple)))
           ;; Her sluttes ringen...
           ((null? items) (begin
                            (set! triple (left top)) 
                            (set! top (right triple))
                            top))
-          (else (build-triples (cdr items)
+          (else ;;(begin set! triple...
+           (build-triples (cdr items)
                                (make-triple (car items) triple 'o)))))
   
-  (let ((first (build-triples items top)))  
+  (let ((first (build-triples (cdr items) (make-triple (car items) top 'o))))  
     (lambda ()
       first)))
 
