@@ -119,6 +119,7 @@
 
 (define (make-ring items)
   (define top (make-triple (car items)'o 'o));;o er plassholder
+  (define tmptriple (make-triple 'o 'o 'o));; Skal nyttes destruktivt senere.
   (define (o? symbol)
     (if (equal? symbol 'o)
         #t
@@ -126,17 +127,21 @@
 
   (define (build-triples items triple)
     (cond ((o? (right top)) (begin ;;set! triple...
-           (set! top (right triple))
-           (set! triple (left top))
-           (build-triples items triple)))
+           (set! top (left triple))
+           (set! triple (right top))
+           (set! tmptriple triple)
+           (build-triples (cdr items) (make-triple (car items) triple 'o))))
           ;; Her sluttes ringen...
           ((null? items) (begin
                            (set! triple (left top)) 
                            (set! top (right triple))
                            top))
-          (else ;;(begin set! triple...
-           (build-triples (cdr items)
-                               (make-triple (car items) triple 'o)))))
+          (else (begin ;;set! triple...
+                  (set! triple (left tmptriple))
+                  (set! tmptriple (right triple))
+                  (set! tmptriple triple)
+                  (build-triples (cdr items)
+                                 (make-triple (car items) triple 'o))))))
   
   (let ((first (build-triples (cdr items) (make-triple (car items) top 'o))))  
     (lambda ()
