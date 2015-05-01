@@ -145,9 +145,9 @@
                       (stream-remove-duplicates (stream-cdr lst))))
         (else (stream-remove-duplicates (stream-cdr lst)))))
 ;;...og tester det:
-;(define test-stream (list-to-stream '(1 1 2 2 3 3 4 4)))
-;(define no-duplicates (stream-remove-duplicates test-stream))
-;(show-stream no-duplicates) ;; Dette ser ut til aa funke bra...
+(define test-stream (list-to-stream '(1 1 2 2 3 3 4 4)))
+(define no-duplicates (stream-remove-duplicates test-stream))
+(show-stream no-duplicates) ;; Dette ser ut til aa funke bra...
 ;; Men hva hvis...
 ;;(define nats-no-duplicates (stream-remove-duplicates nats)) = REKURSJONSBRONN!
 
@@ -161,8 +161,8 @@
 
 (define (in-stream? symbol stream)
   (define (runner stream)
-    (cond ((stream-null? stream) #f)
-          ((eq? symbol (stream-car stream)) #t)
+    (cond ((stream-null? stream) #t)
+          ((eq? symbol (stream-car stream)) #f)
           (else (runner (stream-cdr stream)))))
   (runner stream))
 
@@ -174,5 +174,8 @@
                                   stream))))
 
 (define tstream (list-to-stream '(1 1 2 3 5 4 5 6 7 8 8 2 2)))
+;;(in-stream? 3 tstream)
+;;(in-stream? 1 tstream)
+;;(in-stream? 12 tstream)
 (define testremove (remove-duplicates tstream))
 (define testlist (stream-to-list testremove 8))
